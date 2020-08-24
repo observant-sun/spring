@@ -1,15 +1,20 @@
 package ru.geekbrains.chat.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+@Repository("dbHandler")
 public class DatabaseHandler {
     private Connection connection;
     private Statement stmt;
 
+    @Autowired
     public DatabaseHandler(DataSource dataSource) throws SQLException {
         connection = dataSource.getConnection();
         stmt = connection.createStatement();

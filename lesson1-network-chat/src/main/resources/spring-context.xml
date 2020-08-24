@@ -5,15 +5,9 @@
         xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/context
-            https://www.springframework.org/schema/beans/spring-context.xsd">
+            https://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="chatServer" class="ru.geekbrains.chat.server.Server">
-        <constructor-arg ref="dbHandler"/>
-    </bean>
-
-    <bean id="dbHandler" class="ru.geekbrains.chat.server.DatabaseHandler">
-        <constructor-arg ref="dataSource"/>
-    </bean>
+    <context:component-scan base-package="ru.geekbrains.chat.server"/>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>

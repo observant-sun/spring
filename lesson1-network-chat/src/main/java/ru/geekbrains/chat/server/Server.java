@@ -1,15 +1,20 @@
 package ru.geekbrains.chat.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
+@Component("chatServer")
 public class Server {
 
     private Vector<ClientHandler> clients;
     private DatabaseHandler dbHandler;
 
+    @Autowired
     public Server(DatabaseHandler dbHandler) {
         this.dbHandler = dbHandler;
     }
