@@ -20,7 +20,7 @@ public class ClientHandler {
         return nick;
     }
 
-    public ClientHandler(Server server, Socket socket) {
+    public ClientHandler(Server server, Socket socket, DatabaseHandler dbHandler) {
         try {
             this.socket = socket;
             this.server = server;
@@ -32,27 +32,27 @@ public class ClientHandler {
                         String str = in.readUTF();
                         if (str.startsWith("/auth")) { // /auth login72 pass72
                             String[] tokens = str.split(" ");
-                            String newNick = DatabaseHandler.getNickByLoginAndPass(tokens[1], tokens[2]);
+                            String newNick = dbHandler.getNickByLoginAndPass(tokens[1], tokens[2]);
                             if (newNick != null) {
                                 if (!server.isNickBusy(newNick)) {
                                     sendMsg("/authok");
                                     nick = newNick;
                                     try {
-                                        this.blackList = DatabaseHandler.fetchBlacklistForNick(nick);
+                                        this.blackList = dbHandler.fetchBlacklistForNick(nick);
                                     } catch (NoSuchUserInDBException e) {
                                         e.printStackTrace();
                                     }
                                     sendBlacklist();
                                     server.subscribe(this);
-                                    DatabaseHandler.writeToLog(LoggedEvent.AUTH_OK, tokens[1]);
+                                    dbHandler.writeToLog(LoggedEvent.AUTH_OK, tokens[1]);
                                     login = tokens[1];
                                     break;
                                 } else {
-                                    DatabaseHandler.writeToLog(LoggedEvent.AUTH_FAIL, tokens[1]);
+                                    dbHandler.writeToLog(LoggedEvent.AUTH_FAIL, tokens[1]);
                                     sendMsg("Учетная запись уже используется");
                                 }
                             } else {
-                                DatabaseHandler.writeToLog(LoggedEvent.AUTH_FAIL, tokens[1]);
+                                dbHandler.writeToLog(LoggedEvent.AUTH_FAIL, tokens[1]);
                                 sendMsg("Неверный логин/пароль");
                             }
                         }
@@ -77,7 +77,7 @@ public class ClientHandler {
                                         if (nickToBL.equals(this.nick)) {
                                             sendMsg("Нельзя добавить самого себя в черный список");
                                         } else {
-                                            if (DatabaseHandler.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
+                                            if (dbHandler.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
                                                 blackList.add(nickToBL);
                                                 sendMsg("Вы добавили пользователя \'" + tokens[1] + "\' в черный список");
                                                 sendBlacklist();
@@ -96,7 +96,7 @@ public class ClientHandler {
                                 String[] tokens = str.split(" ");
                                 if (tokens.length > 3) {
                                     try {
-                                        DatabaseHandler.addUser(tokens[1], tokens[2], tokens[3]);
+                                        dbHandler.addUser(tokens[1], tokens[2], tokens[3]);
                                         sendMsg("Создан пользователь с ником \'" + tokens[3]  + "\', логином \'" + tokens[1] + "\' и паролем \'" + tokens[2] + '\'');
                                     } catch (BadCredentialException e) {
                                         sendMsg(e.getMessage());
@@ -128,7 +128,7 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                     if (login != null)
-                        DatabaseHandler.writeToLog(LoggedEvent.AUTH_EXIT, login);
+                        dbHandler.writeToLog(LoggedEvent.AUTH_EXIT, login);
                 }
             }).start();
         } catch (Exception e) {

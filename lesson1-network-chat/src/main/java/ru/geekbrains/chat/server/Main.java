@@ -1,7 +1,12 @@
 package ru.geekbrains.chat.server;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 public class Main {
     public static void main(String[] args) {
-        new Server();
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
+        Server server = context.getBean("chatServer", Server.class);
+        server.start(8189);
     }
 }
