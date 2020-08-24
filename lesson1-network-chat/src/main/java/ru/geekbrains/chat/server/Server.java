@@ -8,13 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
-@Component("chatServer")
 public class Server {
 
     private Vector<ClientHandler> clients;
     private DatabaseHandler dbHandler;
 
-    @Autowired
     public Server(DatabaseHandler dbHandler) {
         this.dbHandler = dbHandler;
     }
