@@ -1,25 +1,33 @@
 package ru.geekbrains.chat.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
 public class Server {
-    private Vector<ClientHandler> clients;
 
-    public Server() {
+    private Vector<ClientHandler> clients;
+    private DatabaseHandler dbHandler;
+
+    public Server(DatabaseHandler dbHandler) {
+        this.dbHandler = dbHandler;
+    }
+
+    public void start(int port) {
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
         try {
-            DatabaseHandler.connect();
-            server = new ServerSocket(8189);
+            server = new ServerSocket(port);
             System.out.println("Сервер запущен. Ожидаем клиентов...");
             while (true) {
                 socket = server.accept();
                 System.out.println("Клиент подключился");
-                new ClientHandler(this, socket);
+                new ClientHandler(this, socket, dbHandler);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,7 +42,7 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DatabaseHandler.disconnect();
+            dbHandler.disconnect();
         }
     }
 

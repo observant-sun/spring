@@ -1,26 +1,24 @@
 package ru.geekbrains.chat.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class DatabaseHandler {
-    private static Connection connection;
-    private static Statement stmt;
+    private Connection connection;
+    private Statement stmt;
 
-    public static void connect() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/chat_users?" +
-                    "user=chat-server&password=XgVbEF4vTzP!R&serverTimezone=Europe/Moscow");
-            stmt = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public DatabaseHandler(DataSource dataSource) throws SQLException {
+        connection = dataSource.getConnection();
+        stmt = connection.createStatement();
     }
 
-    public static void addUser(String login, String password, String nick) throws BadCredentialException {
+    public void addUser(String login, String password, String nick) throws BadCredentialException {
         if (!Pattern.matches("^[\\d\\p{Lower}\\p{Upper}]{3,20}$", login))
             throw new BadCredentialException("login", "Логин должен состоять из латинских букв и цифр и быть от 3 до 20 символов длиной");
         if (!Pattern.matches("^[\\d\\p{Lower}\\p{Upper}]{5,32}$", password))
@@ -54,7 +52,7 @@ public class DatabaseHandler {
         }
     }
 
-    public static String getNickByLoginAndPass(String login, String pass) {
+    public String getNickByLoginAndPass(String login, String pass) {
         try {
             ResultSet rs = stmt.executeQuery("SELECT nickname FROM users WHERE login = '" + login + "' AND password = '" + pass + "';");
             if (rs.next()) {
@@ -66,7 +64,7 @@ public class DatabaseHandler {
         return null;
     }
 
-    public static void disconnect() {
+    public void disconnect() {
         try {
             connection.close();
         } catch (SQLException e) {
@@ -74,7 +72,7 @@ public class DatabaseHandler {
         }
     }
 
-    public static boolean toggleNickInClientsBlacklistInDatabase(ClientHandler client, String blockedNick) throws NoSuchUserInDBException {
+    public boolean toggleNickInClientsBlacklistInDatabase(ClientHandler client, String blockedNick) throws NoSuchUserInDBException {
         /* возвращает, блокируется ли теперь пользователь */
         boolean result = false;
         try {
@@ -115,7 +113,7 @@ public class DatabaseHandler {
         return result;
     }
 
-    public static ArrayList<String> fetchBlacklistForNick(String nick) throws NoSuchUserInDBException {
+    public ArrayList<String> fetchBlacklistForNick(String nick) throws NoSuchUserInDBException {
         ArrayList<String> list = new ArrayList<>();
         try {
             ResultSet rs1 = stmt.executeQuery("SELECT id FROM users WHERE nickname = \'" + nick + "\';");
@@ -136,7 +134,7 @@ public class DatabaseHandler {
         return list;
     }
 
-    public static void writeToLog(LoggedEvent ev, String login) {
+    public void writeToLog(LoggedEvent ev, String login) {
         Timestamp timestamp = Timestamp.from(Instant.now());
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO chat_users.event_log (event_id, login, timestamp)" +
