@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import ru.geekbrains.persistance.ProductRepository;
 import ru.geekbrains.persistance.UserRepository;
 
 import javax.sql.DataSource;
@@ -40,4 +41,10 @@ public class PersistConfig {
         ds.setUrl(databaseUrl);
         return ds;
     }
+
+    @Bean
+    public ProductRepository productRepository(){
+        return new ProductRepository();
+    }
+
 }
