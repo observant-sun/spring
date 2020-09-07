@@ -7,8 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="lesson1-network-chat" />
+        <module name="lesson-3" />
         <module name="lesson-2-spring-mvc" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="lesson-3-hibernate" target="1.5" />
+      <module name="lesson1-network-chat (1)" target="11" />
+      <module name="lesson3-hibernate" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
