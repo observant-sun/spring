@@ -5,11 +5,9 @@ import kriuchkov.maksim.persist.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +19,20 @@ public class ProductController {
     private ProductRepository repository;
 
     @GetMapping
-    public String getProducts(Model model) {
-        List<Product> list = repository.findAll();
+    public String getProducts(Model model,
+                              @RequestParam(value = "priceMin", required = false) BigDecimal priceMin,
+                              @RequestParam(value = "priceMax", required = false) BigDecimal priceMax) {
+        List<Product> list;
+
+        if (priceMin == null && priceMax == null)
+            list = repository.findAll();
+        else if (priceMin != null && priceMax == null)
+            list = repository.findByPriceGreaterThanEqual(priceMin);
+        else if (priceMin == null)
+            list = repository.findByPriceLessThanEqual(priceMax);
+        else
+            list = repository.findByPriceGreaterThanEqualAndPriceLessThanEqual(priceMin, priceMax);
+
         model.addAttribute("products", list);
         return "products";
     }
