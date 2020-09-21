@@ -58,7 +58,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="product : ${products}">
+                <tr th:each="product : ${products.content}">
                     <th scope="row" th:text="${product.id}"></th>
                     <td th:text="${product.name}"></td>
                     <td th:text="${product.price}"></td>
@@ -69,6 +69,24 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="col-12">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li th:each="num: ${#numbers.sequence(1, products.totalPages)}" class="page-item"
+                        th:classappend="${num == products.number + 1} ? 'active'">
+                        <a class="page-link"
+                           th:text="${num}"
+                           th:href="@{product(
+                                        page=${num},
+                                        pageSize=${products.size},
+                                        priceMin=${priceMin},
+                                        priceMax=${priceMax})}">
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

@@ -4,6 +4,9 @@ import kriuchkov.maksim.persist.entity.Product;
 import kriuchkov.maksim.persist.repo.ProductRepository;
 import kriuchkov.maksim.persist.repo.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,8 +43,9 @@ public class ProductController {
     @GetMapping
     public String getProducts(Model model,
                               @RequestParam(value = "priceMin", required = false) BigDecimal priceMin,
-                              @RequestParam(value = "priceMax", required = false) BigDecimal priceMax) {
-
+                              @RequestParam(value = "priceMax", required = false) BigDecimal priceMax,
+                              @RequestParam(value = "page") Optional<Integer> pageNumber,
+                              @RequestParam(value = "pageSize") Optional<Integer> pageSize) {
 
 //  вариант с CriteriaBuilder
 
@@ -58,14 +62,21 @@ public class ProductController {
 //        CriteriaQuery<Product> cq = query.select(from).where(predicates.toArray(new Predicate[0]));
 //        List<Product> list = em.createQuery(cq).getResultList();
 
+
+        PageRequest pageRequest = PageRequest.of(pageNumber.orElse(1) - 1, pageSize.orElse(10), Sort.by("name"));
+
         Specification<Product> spec = UserSpecification.trueLiteral();
         if (priceMin != null)
             spec = spec.and(UserSpecification.priceGreaterOrEqual(priceMin));
         if (priceMax != null)
             spec = spec.and(UserSpecification.priceLessOrEqual(priceMax));
-        List<Product> list = repository.findAll(spec);
+        Page<Product> page = repository.findAll(spec, pageRequest);
 
-        model.addAttribute("products", list);
+        model.addAttribute("products", page);
+
+        model.addAttribute("priceMin", priceMin);
+        model.addAttribute("priceMax", priceMax);
+
         return "products";
     }
 
