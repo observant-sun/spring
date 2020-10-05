@@ -1,8 +1,8 @@
-package kriuchkov.maksim.controller;
+package kriuchkov.maksim.lesson4.controller;
 
-import kriuchkov.maksim.persist.entity.Product;
-import kriuchkov.maksim.persist.repo.ProductRepository;
-import kriuchkov.maksim.persist.repo.UserSpecification;
+import kriuchkov.maksim.lesson4.persist.repo.UserSpecification;
+import kriuchkov.maksim.lesson4.persist.entity.Product;
+import kriuchkov.maksim.lesson4.persist.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,13 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -28,40 +22,12 @@ public class ProductController {
     @Autowired
     private ProductRepository repository;
 
-//  для варианта с CriteriaBuilder
-
-//    @Autowired
-//    private EntityManagerFactory entityManagerFactory;
-//
-//    private EntityManager em;
-//
-//    @PostConstruct
-//    public void init() {
-//        em = entityManagerFactory.createEntityManager();
-//    }
-
     @GetMapping
     public String getProducts(Model model,
                               @RequestParam(value = "priceMin", required = false) BigDecimal priceMin,
                               @RequestParam(value = "priceMax", required = false) BigDecimal priceMax,
                               @RequestParam(value = "page") Optional<Integer> pageNumber,
                               @RequestParam(value = "pageSize") Optional<Integer> pageSize) {
-
-//  вариант с CriteriaBuilder
-
-//        CriteriaBuilder cb = em.getCriteriaBuilder();
-//        CriteriaQuery<Product> query = cb.createQuery(Product.class);
-//        Root<Product> from = query.from(Product.class);
-//
-//        List<Predicate> predicates = new ArrayList<>();
-//        if (priceMin != null)
-//            predicates.add(cb.ge(from.get("price"), priceMin));
-//        if (priceMax != null)
-//            predicates.add(cb.le(from.get("price"), priceMax));
-//
-//        CriteriaQuery<Product> cq = query.select(from).where(predicates.toArray(new Predicate[0]));
-//        List<Product> list = em.createQuery(cq).getResultList();
-
 
         PageRequest pageRequest = PageRequest.of(pageNumber.orElse(1) - 1, pageSize.orElse(10), Sort.by("name"));
 
@@ -72,10 +38,7 @@ public class ProductController {
             spec = spec.and(UserSpecification.priceLessOrEqual(priceMax));
         Page<Product> page = repository.findAll(spec, pageRequest);
 
-        model.addAttribute("products", page);
-
-        model.addAttribute("priceMin", priceMin);
-        model.addAttribute("priceMax", priceMax);
+        model.addAttribute("productsPage", page);
 
         return "products";
     }
@@ -99,9 +62,7 @@ public class ProductController {
 
     @PostMapping("/update")
     public String updateProduct(Product product) {
-        if (repository.findById(product.getId()).isPresent())
-            repository.save(product);
-        // TODO: else error?
+        repository.save(product);
         return "redirect:/product";
     }
 

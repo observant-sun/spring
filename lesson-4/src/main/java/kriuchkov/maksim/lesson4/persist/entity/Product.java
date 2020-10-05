@@ -1,4 +1,4 @@
-package kriuchkov.maksim.persist.entity;
+package kriuchkov.maksim.lesson4.persist.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
