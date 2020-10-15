@@ -5,7 +5,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
-public final class UserSpecification {
+public final class ProductSpecification {
 
     public static Specification<Product> trueLiteral() {
         return (root, query, builder) -> builder.isTrue(builder.literal(true));

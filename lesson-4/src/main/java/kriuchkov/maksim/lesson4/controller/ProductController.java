@@ -1,6 +1,6 @@
 package kriuchkov.maksim.lesson4.controller;
 
-import kriuchkov.maksim.lesson4.persist.repo.UserSpecification;
+import kriuchkov.maksim.lesson4.persist.repo.ProductSpecification;
 import kriuchkov.maksim.lesson4.persist.entity.Product;
 import kriuchkov.maksim.lesson4.persist.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,11 @@ public class ProductController {
 
         PageRequest pageRequest = PageRequest.of(pageNumber.orElse(1) - 1, pageSize.orElse(10), Sort.by("name"));
 
-        Specification<Product> spec = UserSpecification.trueLiteral();
+        Specification<Product> spec = ProductSpecification.trueLiteral();
         if (priceMin != null)
-            spec = spec.and(UserSpecification.priceGreaterOrEqual(priceMin));
+            spec = spec.and(ProductSpecification.priceGreaterOrEqual(priceMin));
         if (priceMax != null)
-            spec = spec.and(UserSpecification.priceLessOrEqual(priceMax));
+            spec = spec.and(ProductSpecification.priceLessOrEqual(priceMax));
         Page<Product> page = repository.findAll(spec, pageRequest);
 
         model.addAttribute("productsPage", page);
