@@ -76,10 +76,6 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "user";
         }
-
-        // TODO реализовать проверку повторного ввода пароля.
-        // TODO Использовать метод bindingResult.rejectValue();
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
         return "redirect:/user";
