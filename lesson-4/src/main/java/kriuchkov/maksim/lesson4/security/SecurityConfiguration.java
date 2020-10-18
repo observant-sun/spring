@@ -42,12 +42,14 @@ public class SecurityConfiguration {
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-                    .antMatchers("/").anonymous()
-                    .antMatchers("/product/**").hasRole("ADMIN")
-                    .antMatchers("/product/**").hasRole("MANAGER")
-                    .antMatchers("/user/**").hasRole("ADMIN")
+                        .antMatchers("/").anonymous()
+                        .antMatchers("/product/**").hasRole("ADMIN")
+                        .antMatchers("/product/**").hasRole("MANAGER")
+                        .antMatchers("/user/**").hasRole("ADMIN")
                     .and()
-                    .formLogin();
+                    .formLogin()
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authUser");
         }
     }
 

@@ -1,6 +1,5 @@
 package kriuchkov.maksim.lesson4.controller;
 
-import kriuchkov.maksim.lesson4.persist.entity.Product;
 import kriuchkov.maksim.lesson4.persist.entity.User;
 import kriuchkov.maksim.lesson4.persist.repo.UserRepository;
 import kriuchkov.maksim.lesson4.persist.repo.UserSpecification;
