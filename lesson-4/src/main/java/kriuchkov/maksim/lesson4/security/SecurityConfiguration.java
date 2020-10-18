@@ -32,14 +32,8 @@ public class SecurityConfiguration {
 
         auth.inMemoryAuthentication()
                 .withUser("mem_user")
-                .password("{bcrypt}" +
-                        "$2y$12$akMK9tlTR3uo/l4XUzQJieZQNVRO4M8GjPxWNl4j5yBDOkM97ccj2")
+                .password("$2y$12$akMK9tlTR3uo/l4XUzQJieZQNVRO4M8GjPxWNl4j5yBDOkM97ccj2")
                 .roles("ADMIN");
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -48,33 +42,6 @@ public class SecurityConfiguration {
     }
 
     @Configuration
-    @Order(1)
-    public static class APIWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .authorizeRequests()
-                    .antMatchers("/api/**").hasRole("ADMIN")
-                    .and()
-                    .httpBasic()
-                    .authenticationEntryPoint(((httpServletRequest, httpServletResponse, e) -> {
-                        httpServletResponse.setContentType("application/json");
-                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        httpServletResponse.setCharacterEncoding("UTF-8");
-                        httpServletResponse.getWriter().println(
-                                "{ \"error\": \"" + e.getMessage() + "\" }");
-                    }))
-                    .and()
-                    .csrf().disable()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        }
-
-    }
-
-    @Configuration
-    @Order(2)
     public static class UIWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
